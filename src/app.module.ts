@@ -5,6 +5,8 @@ import { ServeStaticModule } from '@nestjs/serve-static';
 import { MongooseModule } from '@nestjs/mongoose';
 import { DomainsModule } from './domains/domains.module';
 import { join } from 'path';
+import * as dotenv from 'dotenv';
+dotenv.config();
 
 @Module({
   imports: [
@@ -12,7 +14,7 @@ import { join } from 'path';
       rootPath: join(__dirname, '..', 'client'),
       exclude: ['/api*'],
     }),
-    MongooseModule.forRoot(),
+    MongooseModule.forRoot(process.env.DATABASE),
     DomainsModule,
   ],
   controllers: [AppController],

@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .input {
+            width: 300px;
+            height: 40px;
+            display: inline-block;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        .button {
+            background-color: #4CAF50;
+            /* Green */
+            border: none;
+            color: white;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            width: 100px;
+            height: 40px;
+            cursor: pointer;
+        }
+
+        .addDataBase {
+            background-color: goldenrod;
+            /* Green */
+            border: none;
+            color: white;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            width: 150px;
+            height: 40px;
+            cursor: pointer;
+        }
+
+        .getDomains {
+            background-color: gray;
+            /* Green */
+            border: none;
+            color: white;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            width: 170px;
+            height: 40px;
+            cursor: pointer;
+        }
+
+        .container {
+            width: 100%;
+            margin: 0px auto 0px auto;
+            text-align: center;
+        }
+
+        .text {
+            width: 500px;
+            display: block;
+            margin: 0px 0px 0px 10px;
+        }
+
+        .textBox {
+            display: flex;
+            justify-content: space-around;
+        }
+
+        .list {
+            width: 500px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <input placeholder="example: abc.com" class="input" />
+        <button class="button" onclick="fetchData()">search</button>
+        <button class="addDataBase" onclick="setDomains()">add to database</button>
+        <button class="getDomains" onclick="getDomains()">get list from database</button>
+    </div>
+    <br />
+    <div class="textBox">
+        <text class="text"></text>
+        <ul class="list"></ul>
+    </div>
+</body>
+<script>
+    const input = document.querySelector('.input')
+    const text = document.querySelector('.text')
+    const addDataBase = document.querySelector('.addDataBase')
+    const list = document.querySelector('.list')
+    document.addEventListener('keydown', e => {
+        if (e.key === 'Enter') {
+            fetchData()
+        }
+    })
+    input.addEventListener('change', e => {
+        input.value = e.target.value
+    })
+
+    async function fetchData() {
+        const url = `https://www.whoisxmlapi.com/whoisserver/WhoisService?apiKey=at_Ur2bTWK2tvFClJPMA37QxC3mD434o&domainName=${input.value}&outputFormat=JSON`
+        try {
+            const response = await fetch(url)
+            const { WhoisRecord } = await response.json()
+            text.innerText = WhoisRecord.registryData.rawText.replace(/[^a-zа-яё0-9\s]/gi, ' ')
+            localStorage.setItem('name', WhoisRecord.registryData.domainName)
+            localStorage.setItem('information', WhoisRecord.registryData.rawText)
+
+            console.log(WhoisRecord)
+        } catch (e) {
+            console.log(e)
+        }
+    }
+    async function setDomains() {
+        const domainName = localStorage.getItem('name')
+        const information = localStorage.getItem('information')
+        try {
+            await fetch('http://localhost:3000/api/domains', {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ name: domainName, information: information })
+            })
+        } catch (e) {
+            console.log(e)
+        }
+    }
+    async function getDomains() {
+        try {
+            const res = await fetch('http://localhost:3000/api/domains')
+            const result = await res.json()
+            list.innerHTML = ''
+            result.forEach(e => {
+                const listViewItem = document.createElement('li');
+                e?.name && listViewItem.appendChild(document.createTextNode(e?.name));
+                list.appendChild(listViewItem);
+            });
+
+        } catch (e) {
+            console.log(e)
+        }
+    }
+
+</script>
+
+</html>

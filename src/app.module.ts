@@ -12,9 +12,7 @@ import { join } from 'path';
       rootPath: join(__dirname, '..', 'client'),
       exclude: ['/api*'],
     }),
-    MongooseModule.forRoot(
-      'mongodb+srv://Pirogok0_0:Pirogok12345@myfreecluster.f3lsj.mongodb.net/?retryWrites=true&w=majority',
-    ),
+    MongooseModule.forRoot(),
     DomainsModule,
   ],
   controllers: [AppController],

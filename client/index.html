@@ -126,7 +126,7 @@
         const domainName = localStorage.getItem('name')
         const information = localStorage.getItem('information')
         try {
-            await fetch('http://localhost:3000/api/domains', {
+            await fetch('https://domains12345.herokuapp.com/api/domains', {
                 method: 'POST',
                 headers: {
                     'Accept': 'application/json',
@@ -140,7 +140,7 @@
     }
     async function getDomains() {
         try {
-            const res = await fetch('http://localhost:3000/api/domains')
+            const res = await fetch('https://domains12345.herokuapp.com/api/domains')
             const result = await res.json()
             list.innerHTML = ''
             result.forEach(e => {
